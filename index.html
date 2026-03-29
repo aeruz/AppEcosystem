@@ -3,63 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedules!</title>
+    <title>My App Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* * We're importing 'Nunito', a font with rounded edges 
-         * which feels much friendlier and more playful than a standard font.
-        */
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap');
         body {
-            font-family: 'Nunito', sans-serif;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .search-focus:focus {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
         }
     </style>
 </head>
-<!-- A bright, warm gradient background makes the page feel more cheerful. -->
-<body class="bg-gradient-to-br from-yellow-200 to-orange-300 min-h-screen p-4 flex items-center justify-center">
+<body class="p-4 md:p-8 lg:p-12">
 
-    <!-- 
-      This card has a subtle transparency (bg-white/90) and a backdrop-blur effect 
-      to give it a soft, modern look. The rounding is also increased.
-    -->
-    <div class="max-w-md w-full mx-auto bg-white/90 backdrop-blur-sm shadow-xl rounded-3xl p-8 text-center">
-        
-        <!-- The heading is larger, uses a fun color, and includes an emoji for a welcoming touch. -->
-        <h1 class="text-5xl font-extrabold text-orange-500 mb-4">
-            Hello! 👋
+    <!-- Header Section -->
+    <header class="max-w-6xl mx-auto mb-12 text-center">
+        <div class="inline-block p-2 px-4 mb-4 text-xs font-semibold tracking-widest text-blue-400 uppercase bg-blue-500/10 rounded-full border border-blue-500/20">
+            Project Showcase
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+            App Ecosystem
         </h1>
-
-        <p class="text-lg text-gray-600 mb-10">
-            Whose schedule would you like to see?
+        <p class="text-slate-400 max-w-2xl mx-auto text-lg">
+            A curated collection of lightweight web applications, tools, and experiments hosted on GitHub.
         </p>
+    </header>
 
-        <!-- The links are now styled directly as buttons, which is cleaner code. -->
-        <div class="space-y-5">
-            
-            <!-- Drake's Schedule Button -->
-            <!-- 
-              Using flexbox to align the icon and text perfectly.
-              The button is larger, more colorful, and has a more noticeable hover effect.
-            -->
-            <a href="drake-schedule.html" class="flex items-center justify-center gap-3 w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg">
-                <!-- A simple user icon makes the button more visual. -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <!-- Search and Filter -->
+    <div class="max-w-6xl mx-auto mb-10">
+        <div class="relative max-w-md mx-auto">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
-                <span>Drake's Schedule</span>
-            </a>
-            
-            <!-- Dane's Schedule Button -->
-            <a href="dane-schedule.html" class="flex items-center justify-center gap-3 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg">
-                <!-- Using the same icon for consistency. -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span>Dane's Schedule</span>
-            </a>
-
+            </span>
+            <input 
+                type="text" 
+                id="searchApp" 
+                placeholder="Search your apps..." 
+                class="w-full py-3 pl-12 pr-4 bg-slate-900/50 border border-slate-700 rounded-2xl focus:outline-none focus:border-blue-500 text-slate-200 transition-all search-focus"
+            >
         </div>
     </div>
 
+    <!-- App Grid -->
+    <main id="appGrid" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- CARD 1: Update the 'href' to point to your folder/index.html -->
+        <a href="./timer-app/index.html" class="app-card glass p-6 rounded-3xl flex flex-col h-full group" data-title="Focus Timer">
+            <div class="w-12 h-12 mb-6 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2 text-white">Focus Timer</h3>
+            <p class="text-slate-400 text-sm mb-6 flex-grow">A sleek Pomodoro timer to help you maintain productivity throughout the day.</p>
+            <div class="flex items-center text-blue-400 font-medium text-sm">
+                Launch App
+                <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
+            </div>
+        </a>
+
+        <!-- CARD 2: Update the 'href' -->
+        <a href="./notes-app/index.html" class="app-card glass p-6 rounded-3xl flex flex-col h-full group" data-title="Quick Notes">
+            <div class="w-12 h-12 mb-6 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2 text-white">Quick Notes</h3>
+            <p class="text-slate-400 text-sm mb-6 flex-grow">Markdown-ready note taking app with local storage persistence.</p>
+            <div class="flex items-center text-blue-400 font-medium text-sm">
+                Launch App
+                <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
+            </div>
+        </a>
+
+        <!-- CARD 3: Update the 'href' -->
+        <a href="./weather-dashboard/index.html" class="app-card glass p-6 rounded-3xl flex flex-col h-full group" data-title="Weather Deck">
+            <div class="w-12 h-12 mb-6 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a3.5 3.5 0 1 1-5.95-2.45c.1-.07.2-.13.31-.18l.84-.37a6.5 6.5 0 1 1 9.4 0l.84.37c.1.05.2.11.31.18a3.5 3.5 0 1 1-5.95 2.45Z"/></svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2 text-white">Weather Deck</h3>
+            <p class="text-slate-400 text-sm mb-6 flex-grow">Minimalist weather dashboard with beautiful dynamic backgrounds.</p>
+            <div class="flex items-center text-blue-400 font-medium text-sm">
+                Launch App
+                <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
+            </div>
+        </a>
+
+        <!-- ADD MORE CARDS ABOVE THIS LINE -->
+
+        <div onclick="window.location.href='https://github.com/yourusername'" class="glass p-6 rounded-3xl flex flex-col items-center justify-center border-dashed border-2 border-slate-700 opacity-50 hover:opacity-100 transition-opacity cursor-pointer group">
+            <div class="w-12 h-12 mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 group-hover:text-blue-400 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y1="19"/><line x1="5" y1="12" x2="19" y1="12"/></svg>
+            </div>
+            <span class="text-slate-500 font-medium text-center px-4">Create a new folder in your repo to add more</span>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-6xl mx-auto mt-20 pt-8 border-t border-slate-800 text-center text-slate-500 text-sm">
+        <p>© <span id="year"></span> Your Name. Built with Tailwind CSS.</p>
+        <div class="mt-4 flex justify-center space-x-6">
+            <a href="https://github.com/yourusername" class="hover:text-white transition-colors">GitHub</a>
+            <a href="#" class="hover:text-white transition-colors">Twitter</a>
+            <a href="#" class="hover:text-white transition-colors">Portfolio</a>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const searchInput = document.getElementById('searchApp');
+        const cards = document.querySelectorAll('.app-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                card.style.display = title.includes(term) ? 'flex' : 'none';
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            const moveX = (x - 0.5) * 20;
+            const moveY = (y - 0.5) * 20;
+            document.body.style.background = `radial-gradient(circle at ${50 + moveX}% ${20 + moveY}%, #1e293b, #0f172a)`;
+        });
+    </script>
 </body>
 </html>
