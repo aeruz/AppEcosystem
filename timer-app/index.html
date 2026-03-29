@@ -41,56 +41,85 @@
             cursor: pointer;
         }
 
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        #headerDragger {
+            height: 6px;
+            cursor: ns-resize;
+            background: rgba(255, 255, 255, 0.03);
+            transition: background 0.2s;
         }
-        .animate-shimmer {
-            animation: shimmer 3s infinite;
+        #headerDragger:hover, #headerDragger.active {
+            background: #3b82f6;
         }
     </style>
 </head>
 <body class="select-none flex flex-col">
 
-    <!-- Header -->
-    <header class="p-4 bg-[#111115] border-b border-white/5 flex justify-between items-center shrink-0 z-50 shadow-2xl">
-        <div class="flex items-center gap-4">
-            <button id="toggleSidebar" class="p-2 hover:bg-white/5 rounded-lg transition-colors text-slate-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
-            </button>
-            <div class="flex flex-col">
+    <!-- Combined Production Control Header -->
+    <header id="mainHeader" class="bg-[#111115] border-b border-white/5 flex flex-col shrink-0 z-50 shadow-2xl transition-[height] duration-75" style="height: 140px; min-height: 100px; max-height: 450px;">
+        <div class="flex-1 p-4 flex flex-col md:flex-row items-center justify-between gap-4 overflow-hidden">
+            
+            <!-- Left: Clock & Sidebar Toggle -->
+            <div class="flex items-center justify-between w-full md:w-auto gap-4 shrink-0">
                 <div class="flex items-center gap-3">
-                    <h1 id="mainClock" class="text-3xl font-mono font-bold tracking-tighter text-blue-500 leading-none">00:00:00</h1>
-                    <button id="timeFormatToggle" class="px-2 py-0.5 rounded border border-white/10 bg-white/5 text-[9px] font-black text-slate-400 hover:text-white transition-all uppercase">12H</button>
+                    <button id="toggleSidebar" class="p-2 hover:bg-white/5 rounded-lg text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+                    </button>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-2">
+                            <h1 id="mainClock" class="text-2xl font-mono font-bold tracking-tighter text-blue-500 leading-none">00:00:00</h1>
+                            <button id="timeFormatToggle" class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[8px] font-black text-slate-400 uppercase">12H</button>
+                        </div>
+                        <p id="currentDate" class="text-[9px] uppercase tracking-[0.2em] text-slate-500 font-bold mt-1">SUN, MAR 29</p>
+                    </div>
                 </div>
-                <p id="currentDate" class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mt-1">SUN, MAR 29</p>
+                
+                <div class="md:hidden flex items-center gap-2 px-2 py-1 bg-white/5 rounded border border-white/10">
+                    <div id="statusPulseMobile" class="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
+                    <span id="statusLabelMobile" class="text-[8px] font-black uppercase">Idle</span>
+                </div>
+            </div>
+
+            <!-- Middle: Editable Title & COMBINED HUD Area -->
+            <div class="flex-1 flex flex-col gap-2 w-full max-w-2xl">
+                <div class="relative group">
+                    <input id="projectTitleInput" type="text" value="NEW ANIMATION PROJECT" class="w-full bg-transparent text-center text-[10px] md:text-xs font-black tracking-[0.3em] text-slate-400 focus:text-white outline-none border-b border-white/5 focus:border-blue-500/50 pb-1 transition-all uppercase">
+                </div>
+
+                <!-- Combined HUD component inside the header -->
+                <div id="activeShotHeader" class="hidden bg-blue-600/5 border border-blue-500/20 rounded-md px-4 py-2 flex flex-col gap-2">
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-black text-blue-400 uppercase tracking-widest">Shot</span>
+                            <span id="activeShotNameHeader" class="text-xs font-bold truncate max-w-[120px]">---</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span id="hudRemainingTimeHeader" class="text-sm font-mono font-bold text-orange-500">00:00</span>
+                            <span class="text-[7px] text-slate-500 font-bold uppercase">Remaining</span>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="text-[7px] font-black text-orange-400 uppercase tracking-widest">ETA</span>
+                            <span id="activeShotETAHeader" class="text-xs font-mono font-bold text-orange-500">--:--</span>
+                        </div>
+                    </div>
+                    <div class="h-1.5 bg-white/5 rounded-full overflow-hidden relative w-full">
+                        <div id="hudProgressBarHeader" class="h-full bg-blue-600 transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(37,99,235,0.4)]" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div id="standbyHeader" class="text-center py-2 border border-dashed border-white/5 rounded">
+                    <span class="text-[8px] text-slate-600 font-black uppercase tracking-[0.3em]">Ready for Tracking</span>
+                </div>
+            </div>
+
+            <!-- Right: Status Badge -->
+            <div class="hidden md:flex items-center gap-2 px-3 py-1 bg-white/5 rounded-md border border-white/10 shrink-0">
+                <div id="statusPulse" class="w-2 h-2 rounded-full bg-slate-600"></div>
+                <span id="statusLabel" class="text-[10px] font-black uppercase tracking-widest">Idle</span>
             </div>
         </div>
 
-        <!-- Editable Title & HUD Area -->
-        <div class="flex-1 max-w-xl mx-8 hidden md:flex flex-col gap-2">
-            <div class="relative group flex items-center justify-center">
-                <input id="projectTitleInput" type="text" value="NEW ANIMATION PROJECT" placeholder="ENTER PROJECT / CLIENT NAME" class="w-full bg-transparent text-center text-xs font-black tracking-[0.4em] text-slate-400 focus:text-white outline-none border-b border-transparent focus:border-blue-500/50 pb-1 transition-all uppercase placeholder:opacity-30">
-            </div>
-
-            <div id="activeShotHeader" class="hidden bg-blue-600/10 border border-blue-500/20 rounded-md px-4 py-2 flex items-center justify-between">
-                <div class="flex flex-col">
-                    <span class="text-[8px] font-black text-blue-400 uppercase tracking-widest">Active Shot</span>
-                    <span id="activeShotNameHeader" class="text-sm font-bold truncate max-w-[150px]">---</span>
-                </div>
-                <div class="flex flex-col items-end">
-                    <span class="text-[8px] font-black text-orange-400 uppercase tracking-widest">Target Finish</span>
-                    <span id="activeShotETAHeader" class="text-sm font-mono font-bold text-orange-500">--:--</span>
-                </div>
-            </div>
-            <div id="standbyHeader" class="text-center py-2 border border-dashed border-white/5 rounded">
-                <span class="text-[9px] text-slate-600 font-black uppercase tracking-[0.3em]">System Standby</span>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-md border border-white/10">
-            <div id="statusPulse" class="w-2 h-2 rounded-full bg-slate-600"></div>
-            <span id="statusLabel" class="text-[10px] font-black uppercase tracking-widest hidden xs:inline">Idle</span>
+        <div id="headerDragger" class="w-full flex items-center justify-center pb-1">
+            <div class="w-10 h-1 bg-white/10 rounded-full"></div>
         </div>
     </header>
 
@@ -106,322 +135,276 @@
                         <button id="addShotBtn" class="bg-blue-600 hover:bg-blue-500 text-[10px] font-black rounded px-4 py-2 uppercase">Create</button>
                     </div>
                 </div>
-                <div id="shotsList" class="flex-1 p-2 space-y-1 overflow-y-auto scrollbar-hide">
-                    <!-- Shots injected here -->
-                </div>
+                <div id="shotsList" class="flex-1 p-2 space-y-1 overflow-y-auto scrollbar-hide"></div>
             </div>
         </section>
 
         <!-- Main Production Area -->
         <section class="flex-1 flex flex-col bg-[#050507] overflow-hidden relative">
-            
-            <!-- Sub-Header with STRETCH -->
             <div class="flex flex-wrap justify-between items-center p-3 border-b border-white/5 bg-[#0a0a0e] shrink-0 z-30 gap-y-2">
-                <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Vertical Production Timeline</span>
-                </div>
-
                 <div class="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                    <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Stretch Timeline Bar</span>
-                    <input id="trackWidthSlider" type="range" min="40" max="400" value="120" class="w-24 sm:w-32 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                    <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Stretch Bar</span>
+                    <input id="trackWidthSlider" type="range" min="40" max="400" value="120" class="w-24 sm:w-32 h-1 accent-blue-500">
                     <span id="trackWidthDisplay" class="text-[8px] font-mono text-blue-400 w-6">120px</span>
                 </div>
-
                 <div class="flex items-center gap-4 text-[9px] font-black uppercase text-slate-500">
                     <div class="flex items-center gap-1"><div class="w-2 h-2 bg-blue-500"></div> Active</div>
                     <div class="flex items-center gap-1"><div class="w-2 h-2 border border-blue-500/30"></div> Past</div>
                 </div>
             </div>
 
-            <!-- HUD Overlay -->
-            <div id="hudOverlay" class="absolute top-[58px] right-4 left-20 z-40 p-4 pointer-events-none opacity-0 transition-opacity">
-                <div class="w-full bg-[#111115]/95 border border-blue-500/30 rounded-lg p-4 shadow-2xl backdrop-blur-md pointer-events-auto">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="text-blue-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-2 10h3L11 22l2-10h-3l2-10z"/></svg></div>
-                            <h2 id="hudShotName" class="text-xl font-black uppercase truncate">---</h2>
-                        </div>
-                        <div class="text-right">
-                            <div id="hudRemainingTime" class="text-xl font-mono font-bold text-orange-500">00:00</div>
-                            <div id="hudETA" class="text-[9px] font-bold text-slate-600 uppercase">Finish: --:--</div>
-                        </div>
-                    </div>
-                    <div class="h-4 bg-white/5 rounded-full overflow-hidden relative">
-                        <div id="hudProgressBar" class="h-full bg-blue-600 transition-all duration-1000 ease-linear shadow-[0_0_20px_rgba(37,99,235,0.4)] relative" style="width: 0%">
-                             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shimmer"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- THE TIMELINE -->
             <div id="timelineContainer" class="flex-1 overflow-y-auto relative scrollbar-hide bg-[#050507]">
                 <div class="relative" style="height: 2880px;">
-                    <!-- Hour labels and track spine injected here -->
                     <div id="timeGrid"></div>
                     <div id="timelineSpine" class="absolute left-16 h-full border-x border-white/5 bg-white/[0.02]" style="width: 120px;"></div>
                     <div id="historyLayer"></div>
-                    <div id="activeLayer" class="absolute left-16 bg-blue-500 z-10 shadow-[0_0_20px_rgba(59,130,246,0.5)] border-l-2 border-blue-400" style="width: 120px; top: 0; height: 0;"></div>
-                    <div id="projectedLayer" class="absolute left-16 border-2 border-orange-500/30 border-t-0 bg-orange-500/10 z-10" style="width: 120px; top: 0; height: 0;"></div>
+                    <div id="activeLayer" class="absolute left-16 bg-blue-500 z-10 border-l-2 border-blue-400" style="width: 120px; top: 0; height: 0; display: none;"></div>
+                    <div id="projectedLayer" class="absolute left-16 border-2 border-orange-500/30 border-t-0 bg-orange-500/10 z-10" style="width: 120px; top: 0; height: 0; display: none;"></div>
                     
-                    <!-- NOW Needle -->
                     <div id="nowNeedle" class="absolute left-0 right-0 z-20 flex items-center pointer-events-none">
                         <div class="h-px flex-1 bg-red-600/30"></div>
                         <div class="h-0.5 w-full bg-red-600 shadow-[0_0_10px_red]" style="margin-left: 4rem;"></div>
-                        <div class="absolute left-16 -translate-y-1/2 bg-red-600 text-[8px] font-black px-1 text-white rounded-sm ring-2 ring-slate-950 uppercase">LIVE</div>
+                        <div class="absolute left-16 -translate-y-1/2 bg-red-600 text-[8px] font-black px-1 text-white rounded-sm uppercase">LIVE</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <footer class="p-2 px-4 bg-[#111115] border-t border-white/10 flex justify-between items-center text-[10px] shrink-0 z-30 font-mono text-slate-500 uppercase tracking-widest">
-                <div id="footerStatus">Deck Active • 1px : 1min</div>
+            <footer class="p-2 px-4 bg-[#111115] border-t border-white/10 flex justify-between items-center text-[10px] shrink-0 font-mono text-slate-500 uppercase tracking-[0.2em]">
+                <div id="footerStatus">DECK ACTIVE • 1PX : 1MIN</div>
                 <div id="footerClock" class="text-blue-500 font-bold">00:00</div>
             </footer>
         </section>
     </main>
 
     <script>
-        // State Management
-        let is24Hour = false;
-        let isSidebarOpen = true;
-        let trackWidth = 120;
-        let shots = [];
-        let history = [];
-        let activeShotId = null;
-        let activeStartTime = null;
+        let is24Hour = false, isSidebarOpen = true, trackWidth = 120;
+        let shots = [], history = [], activeShotId = null, activeStartTime = null, editingShotId = null;
 
-        // Dom Elements
-        const mainClock = document.getElementById('mainClock');
-        const footerClock = document.getElementById('footerClock');
-        const currentDate = document.getElementById('currentDate');
-        const timeFormatToggle = document.getElementById('timeFormatToggle');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const sidebar = document.getElementById('sidebar');
-        const trackWidthSlider = document.getElementById('trackWidthSlider');
-        const trackWidthDisplay = document.getElementById('trackWidthDisplay');
-        const timelineSpine = document.getElementById('timelineSpine');
-        const activeLayer = document.getElementById('activeLayer');
-        const projectedLayer = document.getElementById('projectedLayer');
-        const historyLayer = document.getElementById('historyLayer');
-        const timeGrid = document.getElementById('timeGrid');
+        const mainHeader = document.getElementById('mainHeader'), headerDragger = document.getElementById('headerDragger');
+        const mainClock = document.getElementById('mainClock'), footerClock = document.getElementById('footerClock');
+        const timeFormatToggle = document.getElementById('timeFormatToggle'), toggleSidebar = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar'), shotsList = document.getElementById('shotsList');
+        const trackWidthSlider = document.getElementById('trackWidthSlider'), timelineSpine = document.getElementById('timelineSpine');
+        const activeLayer = document.getElementById('activeLayer'), projectedLayer = document.getElementById('projectedLayer');
+        const historyLayer = document.getElementById('historyLayer'), timeGrid = document.getElementById('timeGrid');
         const nowNeedle = document.getElementById('nowNeedle');
-        const shotsList = document.getElementById('shotsList');
-        const hudOverlay = document.getElementById('hudOverlay');
 
-        // Helpers
-        const formatClockTime = (date, seconds = false) => {
+        const safeSetText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        };
+
+        const safeSetClass = (id, className) => {
+            const el = document.getElementById(id);
+            if (el) el.className = className;
+        };
+
+        let isResizing = false;
+        headerDragger.onpointerdown = () => { isResizing = true; headerDragger.classList.add('active'); };
+        document.onpointermove = (e) => {
+            if (!isResizing) return;
+            const h = Math.min(Math.max(100, e.clientY), 450);
+            if (mainHeader) mainHeader.style.height = `${h}px`;
+        };
+        document.onpointerup = () => { isResizing = false; headerDragger.classList.remove('active'); };
+
+        const formatClockTime = (date, sec = false) => {
             if (!date) return "--:--";
-            return date.toLocaleTimeString([], { 
-                hour12: !is24Hour, 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: seconds ? '2-digit' : undefined 
-            });
+            return date.toLocaleTimeString([], { hour12: !is24Hour, hour: '2-digit', minute: '2-digit', second: sec ? '2-digit' : undefined });
         };
 
-        const getPos = (date) => {
-            const startOfToday = new Date();
-            startOfToday.setHours(0, 0, 0, 0);
-            const diffMs = date - startOfToday;
-            return (diffMs / (1000 * 60)); 
+        const formatDuration = (s) => {
+            const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
+            return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
         };
 
-        // Initialize Time Grid
+        const getPos = (d) => {
+            const s = new Date(); s.setHours(0, 0, 0, 0);
+            return (d - s) / 60000;
+        };
+
         const renderTimeGrid = () => {
+            if (!timeGrid) return;
             timeGrid.innerHTML = '';
             for (let i = 0; i < 48; i++) {
-                const hourDiv = document.createElement('div');
-                hourDiv.className = `absolute left-0 right-0 border-t border-white/5 ${i >= 24 ? 'bg-blue-950/10' : ''}`;
-                hourDiv.style.top = `${i * 60}px`;
-                hourDiv.style.height = '60px';
-
-                let label = '';
+                const div = document.createElement('div');
+                div.className = `absolute left-0 right-0 border-t border-white/5 ${i >= 24 ? 'bg-blue-950/10' : ''}`;
+                div.style.top = `${i * 60}px`; div.style.height = '60px';
                 const h = i % 24;
-                if (i === 0) label = "TODAY";
-                else if (i === 24) label = "DAY 2";
-                else {
-                    if (is24Hour) label = `${h.toString().padStart(2, '0')}:00`;
-                    else label = `${h % 12 || 12} ${h >= 12 ? 'PM' : 'AM'}`;
-                }
-
-                hourDiv.innerHTML = `<span class="text-[9px] font-mono block pl-2 pt-1 select-none ${i >= 24 ? 'text-blue-500/40' : 'text-slate-600'}">${label}</span>`;
-                timeGrid.appendChild(hourDiv);
+                let label = is24Hour ? `${h.toString().padStart(2, '0')}:00` : `${h % 12 || 12} ${h >= 12 ? 'PM' : 'AM'}`;
+                if (i === 0) label = "TODAY"; if (i === 24) label = "DAY 2";
+                div.innerHTML = `<span class="text-[8px] font-mono block pl-2 pt-1 ${i >= 24 ? 'text-blue-500/40' : 'text-slate-600'}">${label}</span>`;
+                timeGrid.appendChild(div);
             }
         };
 
         const updateUI = () => {
             const now = new Date();
-            mainClock.textContent = formatClockTime(now, true);
-            footerClock.textContent = formatClockTime(now);
-            currentDate.textContent = now.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
+            if (mainClock) mainClock.textContent = formatClockTime(now, true);
+            if (footerClock) footerClock.textContent = formatClockTime(now);
             
-            // Update "NOW" Needle
-            nowNeedle.style.top = `${getPos(now)}px`;
+            safeSetText('currentDate', now.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase());
+            
+            if (nowNeedle) nowNeedle.style.top = `${getPos(now)}px`;
 
-            // Active Shot Logic
+            shots.forEach(s => {
+                if (activeShotId === s.id) s.remainingSeconds = Math.max(0, s.remainingSeconds - 1);
+                const el = document.getElementById(`timer-shot-${s.id}`);
+                if (el && editingShotId !== s.id) el.textContent = formatDuration(s.remainingSeconds);
+            });
+
             const activeShot = shots.find(s => s.id === activeShotId);
             if (activeShot) {
-                activeShot.remainingSeconds = Math.max(0, activeShot.remainingSeconds - 1);
-                
-                // Update Layers
-                activeLayer.style.top = `${getPos(activeStartTime)}px`;
-                activeLayer.style.height = `${getPos(now) - getPos(activeStartTime)}px`;
-                activeLayer.style.width = `${trackWidth}px`;
-                activeLayer.style.display = 'block';
+                if (activeLayer) {
+                    activeLayer.style.top = `${getPos(activeStartTime)}px`;
+                    activeLayer.style.height = `${getPos(now) - getPos(activeStartTime)}px`;
+                    activeLayer.style.width = `${trackWidth}px`;
+                    activeLayer.style.display = 'block';
+                }
 
-                projectedLayer.style.top = `${getPos(now)}px`;
-                projectedLayer.style.height = `${activeShot.remainingSeconds / 60}px`;
-                projectedLayer.style.width = `${trackWidth}px`;
-                projectedLayer.style.display = 'block';
+                if (projectedLayer) {
+                    projectedLayer.style.top = `${getPos(now)}px`;
+                    projectedLayer.style.height = `${activeShot.remainingSeconds / 60}px`;
+                    projectedLayer.style.width = `${trackWidth}px`;
+                    projectedLayer.style.display = 'block';
+                }
 
-                // HUD
-                hudOverlay.classList.remove('opacity-0');
-                document.getElementById('activeShotHeader').classList.remove('hidden');
-                document.getElementById('standbyHeader').classList.add('hidden');
+                const headerActive = document.getElementById('activeShotHeader');
+                const headerStandby = document.getElementById('standbyHeader');
+                if (headerActive) headerActive.classList.remove('hidden');
+                if (headerStandby) headerStandby.classList.add('hidden');
                 
-                document.getElementById('hudShotName').textContent = activeShot.name;
-                document.getElementById('activeShotNameHeader').textContent = activeShot.name;
+                safeSetText('activeShotNameHeader', activeShot.name);
                 
                 const eta = new Date(now.getTime() + activeShot.remainingSeconds * 1000);
-                document.getElementById('hudETA').textContent = `Finish: ${formatClockTime(eta)}`;
-                document.getElementById('activeShotETAHeader').textContent = formatClockTime(eta);
+                safeSetText('activeShotETAHeader', formatClockTime(eta));
+                safeSetText('hudRemainingTimeHeader', formatDuration(activeShot.remainingSeconds));
 
-                const total = activeShot.totalSeconds;
-                const rem = activeShot.remainingSeconds;
-                const progress = ((total - rem) / total) * 100;
-                document.getElementById('hudProgressBar').style.width = `${progress}%`;
+                const hudBar = document.getElementById('hudProgressBarHeader');
+                if (hudBar) hudBar.style.width = `${((activeShot.totalSeconds - activeShot.remainingSeconds) / activeShot.totalSeconds) * 100}%`;
                 
-                const h = Math.floor(rem / 3600);
-                const m = Math.floor((rem % 3600) / 60);
-                const s = Math.floor(rem % 60);
-                document.getElementById('hudRemainingTime').textContent = `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                
-                document.getElementById('statusPulse').className = "w-2 h-2 rounded-full bg-green-500 animate-pulse";
-                document.getElementById('statusLabel').textContent = "Recording";
+                safeSetClass('statusPulse', "w-2 h-2 rounded-full bg-green-500 animate-pulse");
+                safeSetClass('statusPulseMobile', "w-2 h-2 rounded-full bg-green-500 animate-pulse");
+                safeSetText('statusLabel', "REC");
+                safeSetText('statusLabelMobile', "REC");
 
                 if (activeShot.remainingSeconds <= 0) toggleShot(activeShotId);
-
-                renderShotsList();
             } else {
-                activeLayer.style.display = 'none';
-                projectedLayer.style.display = 'none';
-                hudOverlay.classList.add('opacity-0');
-                document.getElementById('activeShotHeader').classList.add('hidden');
-                document.getElementById('standbyHeader').classList.remove('hidden');
-                document.getElementById('statusPulse').className = "w-2 h-2 rounded-full bg-slate-600";
-                document.getElementById('statusLabel').textContent = "Idle";
+                if (activeLayer) activeLayer.style.display = 'none';
+                if (projectedLayer) projectedLayer.style.display = 'none';
+                
+                const headerActive = document.getElementById('activeShotHeader');
+                const headerStandby = document.getElementById('standbyHeader');
+                if (headerActive) headerActive.classList.add('hidden');
+                if (headerStandby) headerStandby.classList.remove('hidden');
+                
+                safeSetClass('statusPulse', "w-2 h-2 rounded-full bg-slate-600");
+                safeSetClass('statusPulseMobile', "w-2 h-2 rounded-full bg-slate-600");
+                safeSetText('statusLabel', "IDLE");
+                safeSetText('statusLabelMobile', "IDLE");
             }
         };
 
         const renderShotsList = () => {
+            if (!shotsList) return;
             shotsList.innerHTML = '';
             shots.forEach(shot => {
-                const isActive = activeShotId === shot.id;
+                const isActive = activeShotId === shot.id, isEditing = editingShotId === shot.id;
                 const div = document.createElement('div');
                 div.className = `p-3 border transition-all ${isActive ? 'bg-blue-500/10 border-blue-500' : 'bg-transparent border-white/5'}`;
+                
+                let timeUI = isEditing ? `
+                    <div class="flex items-center gap-1 mb-2">
+                        <input id="edit-input-${shot.id}" type="number" value="${Math.floor(shot.remainingSeconds / 60)}" class="w-full bg-[#1a1a24] border border-blue-500 rounded p-1 text-[10px] outline-none">
+                        <button onclick="saveShotTime(${shot.id})" class="bg-blue-600 p-1 rounded text-[8px] font-bold">SAVE</button>
+                    </div>` : `
+                    <div class="flex justify-between items-center mb-1">
+                        <span id="timer-shot-${shot.id}" class="font-mono text-[10px] text-slate-400">${formatDuration(shot.remainingSeconds)}</span>
+                        <button onclick="startEditing(${shot.id})" class="text-[8px] text-slate-500 font-bold uppercase">Edit</button>
+                    </div>`;
+
                 div.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-xs truncate">${shot.name}</span>
-                        <button onclick="deleteShot(${shot.id})" class="text-slate-600 hover:text-red-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </button>
+                        <span class="font-bold text-xs truncate uppercase tracking-tighter">${shot.name}</span>
+                        <button onclick="deleteShot(${shot.id})" class="text-slate-600 hover:text-red-500"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
                     </div>
-                    <button onclick="toggleShot(${shot.id})" class="w-full py-2 rounded text-[10px] font-black uppercase transition-all ${isActive ? 'bg-orange-600' : 'bg-slate-200 text-black'}">
-                        ${isActive ? 'Pause Tracking' : 'Start Shot'}
-                    </button>
-                `;
+                    ${timeUI}
+                    <button onclick="toggleShot(${shot.id})" class="w-full py-1.5 rounded text-[10px] font-black uppercase tracking-tighter transition-all ${isActive ? 'bg-orange-600' : 'bg-slate-200 text-black hover:bg-white'}">
+                        ${isActive ? 'Pause' : 'Start'}
+                    </button>`;
                 shotsList.appendChild(div);
+                if (isEditing) {
+                    const inp = document.getElementById(`edit-input-${shot.id}`);
+                    if (inp) inp.focus();
+                }
             });
         };
 
         const renderHistory = () => {
+            if (!historyLayer) return;
             historyLayer.innerHTML = '';
             history.forEach(seg => {
                 const div = document.createElement('div');
                 div.className = 'absolute left-16 border-l-2';
-                div.style.top = `${getPos(seg.start)}px`;
-                div.style.height = `${Math.max(1, getPos(seg.end) - getPos(seg.start))}px`;
-                div.style.backgroundColor = seg.color + '44';
-                div.style.borderColor = seg.color;
-                div.style.width = `${trackWidth}px`;
-                div.innerHTML = `<div class="absolute left-full ml-4 text-[9px] font-bold text-slate-500 uppercase opacity-50 whitespace-nowrap">${seg.name}</div>`;
+                div.style.top = `${getPos(seg.start)}px`; div.style.height = `${Math.max(1, getPos(seg.end) - getPos(seg.start))}px`;
+                div.style.backgroundColor = seg.color + '44'; div.style.borderColor = seg.color; div.style.width = `${trackWidth}px`;
+                div.innerHTML = `<div class="absolute left-full ml-4 text-[8px] font-bold text-slate-500 uppercase opacity-50 whitespace-nowrap">${seg.name}</div>`;
                 historyLayer.appendChild(div);
             });
         };
 
-        // Actions
         const toggleShot = (id) => {
             if (activeShotId === id) {
-                const shot = shots.find(s => s.id === id);
-                if (activeStartTime && shot) {
-                    history.push({
-                        id: Date.now(),
-                        name: shot.name,
-                        color: shot.color,
-                        start: activeStartTime,
-                        end: new Date()
-                    });
-                }
-                activeShotId = null;
-                activeStartTime = null;
+                const s = shots.find(x => x.id === id);
+                if (activeStartTime && s) history.push({ id: Date.now(), name: s.name, color: s.color, start: activeStartTime, end: new Date() });
+                activeShotId = activeStartTime = null;
             } else {
                 if (activeShotId) toggleShot(activeShotId);
-                activeShotId = id;
-                activeStartTime = new Date();
+                activeShotId = id; activeStartTime = new Date();
             }
-            renderShotsList();
-            renderHistory();
+            renderShotsList(); renderHistory();
         };
 
         const deleteShot = (id) => {
             if (activeShotId === id) activeShotId = null;
-            shots = shots.filter(s => s.id !== id);
-            history = history.filter(h => h.shotId !== id);
-            renderShotsList();
-            renderHistory();
+            shots = shots.filter(s => s.id !== id); history = history.filter(h => h.shotId !== id);
+            renderShotsList(); renderHistory();
         };
 
-        // Event Listeners
-        timeFormatToggle.addEventListener('click', () => {
-            is24Hour = !is24Hour;
-            timeFormatToggle.textContent = is24Hour ? '24H' : '12H';
-            renderTimeGrid();
-        });
+        const startEditing = (id) => { editingShotId = id; renderShotsList(); };
+        const saveShotTime = (id) => {
+            const i = document.getElementById(`edit-input-${id}`);
+            if (i) {
+                const shot = shots.find(s => s.id === id);
+                if (shot) { shot.remainingSeconds = parseInt(i.value) * 60; if (shot.remainingSeconds > shot.totalSeconds) shot.totalSeconds = shot.remainingSeconds; }
+            }
+            editingShotId = null; renderShotsList();
+        };
 
-        toggleSidebar.addEventListener('click', () => {
-            isSidebarOpen = !isSidebarOpen;
-            sidebar.style.width = isSidebarOpen ? '256px' : '0';
-            sidebar.style.opacity = isSidebarOpen ? '1' : '0';
-        });
-
-        trackWidthSlider.addEventListener('input', (e) => {
-            trackWidth = parseInt(e.target.value);
-            trackWidthDisplay.textContent = trackWidth + 'px';
-            timelineSpine.style.width = trackWidth + 'px';
-            renderHistory();
-        });
-
-        document.getElementById('addShotBtn').addEventListener('click', () => {
-            const name = document.getElementById('newShotName').value;
-            const dur = parseInt(document.getElementById('newShotDuration').value);
-            if (!name) return;
-            shots.push({
-                id: Date.now(),
-                name: name.toUpperCase(),
-                totalSeconds: dur * 60,
-                remainingSeconds: dur * 60,
-                color: `hsl(${Math.random() * 360}, 75%, 55%)`
-            });
-            document.getElementById('newShotName').value = '';
-            renderShotsList();
-        });
-
-        // Init
-        renderTimeGrid();
-        setInterval(updateUI, 1000);
-        updateUI();
+        if (timeFormatToggle) {
+            timeFormatToggle.onclick = () => { is24Hour = !is24Hour; timeFormatToggle.textContent = is24Hour ? '24H' : '12H'; renderTimeGrid(); };
+        }
         
+        if (toggleSidebar) {
+            toggleSidebar.onclick = () => { isSidebarOpen = !isSidebarOpen; if (sidebar) { sidebar.style.width = isSidebarOpen ? '256px' : '0'; sidebar.style.opacity = isSidebarOpen ? '1' : '0'; } };
+        }
+        
+        if (trackWidthSlider) {
+            trackWidthSlider.oninput = (e) => { trackWidth = parseInt(e.target.value); const disp = document.getElementById('trackWidthDisplay'); if (disp) disp.textContent = trackWidth + 'px'; if (timelineSpine) timelineSpine.style.width = trackWidth + 'px'; renderHistory(); };
+        }
+        
+        const addBtn = document.getElementById('addShotBtn');
+        if (addBtn) {
+            addBtn.onclick = () => {
+                const n = document.getElementById('newShotName'), d = document.getElementById('newShotDuration');
+                if (!n || !n.value) return;
+                shots.push({ id: Date.now(), name: n.value.toUpperCase(), totalSeconds: parseInt(d.value) * 60, remainingSeconds: parseInt(d.value) * 60, color: `hsl(${Math.random() * 360}, 75%, 55%)` });
+                n.value = ''; renderShotsList();
+            };
+        }
+
+        renderTimeGrid(); setInterval(updateUI, 1000); updateUI();
     </script>
 </body>
 </html>
